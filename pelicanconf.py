@@ -2,11 +2,15 @@
 # -*- coding: utf-8 -*- #
 from __future__ import unicode_literals
 
-AUTHOR = u'Jackon Yang'
-SITENAME = u'Jackon.me'
 SITEURL = 'http://jackon.me'
 
+SITENAME = u'Jackon'
 SITE_SUBTEXT = u'Thoughts, stories and ideas.'
+
+AUTHOR = u'Jackon Yang'
+AUTHOR_IMG = '/theme/img/user-image.png'
+AUTHOR_BIO = u'Jackon Yang, Web Developer. Passionate by Data Mining, Spider'
+
 
 PATH = 'content'
 
@@ -27,8 +31,10 @@ LINKS = (('Pelican', 'http://getpelican.com/'),
          ('You can modify those links in your config file', '#'),)
 
 # Social widget
-SOCIAL = (('You can add links in your config file', '#'),
-          ('Another social link', '#'),)
+SOCIAL = (('GitHub', 'https://github.com/JackonYang'),
+          ('LinkedIn', 'http://www.linkedin.com/in/jiekunyang'),
+          ('Facebook', 'https://www.facebook.com/jackon.yang'),
+          )
 
 # Uncomment following line if you want document-relative URLs when developing
 #RELATIVE_URLS = True
