@@ -1,6 +1,7 @@
 Title: 搭建 python 开发环境
 Date: 2013-09-02 14:16
 Category: python
+Tags: python, etc
 Summary: win7 / ubuntu 下 Python 开发环境搭建
 
 

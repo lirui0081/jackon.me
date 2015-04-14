@@ -1,6 +1,7 @@
 Title: python 入门的小任务
 Date: 2013-09-02 09:16
 Category: python
+Tags: python, how-to-learn
 Summary: 针对具有简单的 c/c++ 或 Java 基础者的 python 入门学习建议.
 
 

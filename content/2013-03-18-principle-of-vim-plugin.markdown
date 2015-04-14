@@ -1,6 +1,7 @@
 Title: vim plugin 原理
 Date: 2013-03-18 15:33
 Category: vim
+Tags: vim, dev-tools
 Summary: vim 个性化设置与功能扩展均通过 script 来实现，这种 script 又叫 plugin。
 
 

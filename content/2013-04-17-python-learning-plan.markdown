@@ -1,6 +1,7 @@
 Title: python 学习计划与书目
 Date: 2013-04-17 10:29
 Category: python
+Tags: python, how-to-learn
 Summary: 已经有半年多 python 编程实践。现在是时候更加深入的理解 python 了。
 
 具体计划如下:
