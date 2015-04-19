@@ -1,7 +1,7 @@
-Title: 搭建 python 开发环境
+Title: 搭建 Python 开发环境
 Date: 2013-09-02 14:16
 Category: python
-Tags: python, etc
+Tags: python, install
 Summary: win7 / ubuntu 下 Python 开发环境搭建
 
 
@@ -9,10 +9,10 @@ Summary: win7 / ubuntu 下 Python 开发环境搭建
 
 - 运行环境: python2.7
 - 类库管理工具: pip
-- ubuntu 下常用类库
+- 常用类库.
 
-windows
--------
+windows 安装 python / pip
+-------------------------
 
 #### 安装 python2.7
 
@@ -39,31 +39,41 @@ python 主要包括 2.x 和 3.x 两个大版本，代码之间不兼容。
 [set-env]: http://zhidao.baidu.com/question/187573577.html
 
 
-ubuntu
-------
+Ubuntu 安装 python / pip
+------------------------
+
+#### 安装 python2.7
 
 #### python and pip tools
-<pre><code>
+
+```shell
 $ sudo apt-get install -y python python-setuptools python-dev
 $ sudo easy_install -U distribute
 $ sudo apt-get install python-pip
-</code></pre>
+```
 
 如果 python-dev 未安装,
-使用 easy_install or setup.py 时报错: 
+使用 easy_install or setup.py 时报错:   
 `command 'gcc' failed with exit status 1`
+
+Ubuntu 下开发环境完善
+---------------------
+
+一些类库, 依赖的 package 无法通过 pip 自动安装.
+
+ubuntu 下的类库整理如下:
 
 #### lib for apache2/mysql
 
-<pre><code>
+```shell
 $ apt-get install libapache2-mod-python, libmysqlclient-dev
-</code></pre>
+```
 
-如果 libmysqlclient-dev 未安装，安装 mysql-python 时报错：
+如果 libmysqlclient-dev 未安装，安装 mysql-python 时报错：  
 `EnvironmentError: mysql_config not found`
 
 #### flake8
 
-<pre><code>
+```shell
 $ sudo pip install flake8
-</code></pre>
+```
