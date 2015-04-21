@@ -13,6 +13,8 @@ AUTHOR_BIO = u'Jackon Yang, Web Developer. Passionate by Data Mining, Spider'
 
 
 SLUGIFY_SOURCE = 'basename'
+ARTICLE_URL = 'posts/{slug}/'
+ARTICLE_SAVE_AS = 'posts/{slug}/index.html'
 
 
 PATH = 'content'
