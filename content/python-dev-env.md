@@ -11,10 +11,10 @@ Summary: win7 / ubuntu 下 Python 开发环境搭建
 - 类库管理工具: pip
 - 常用类库.
 
-windows 安装 python / pip
--------------------------
+windows 环境搭建
+----------------
 
-#### 安装 python2.7
+#### python
 
 python 主要包括 2.x 和 3.x 两个大版本，代码之间不兼容。
 推荐使用 Python2.7，类库较为丰富，安装相对简单。
@@ -31,7 +31,22 @@ python 主要包括 2.x 和 3.x 两个大版本，代码之间不兼容。
 
 1. [下载 pip][download-pip] 并解压
 2. DOS 下进入解压目录执行 `python setup.py install`
-3. [设置环境变量][set-env]，PATH 中添加 pip 的路径，默认为 `c:\python27\Scripts'
+3. [设置环境变量][set-env]，PATH 中添加 pip 的路径，默认为 `c:\python27\Scripts`
+
+#### Notes for 小白
+
+1. 环境变量  
+    `环境变量` 是操作系统搜索可执行程序的路径.  
+    如果不配置, 命令行里输入 python / pip 时, 就会提示找不到 python 程序.
+2. 如何执行 python 程序  
+    通过命令行进入待执行的代码所在路径, `python filename.py` 执行 python 程序.
+3. 命令行里如何切换路径  
+    分两种情况  
+    不更换盘符, 比如 C 盘切换到 C 盘的另一个路径, 使用 `cd target/path`  
+    更换盘符, 比如 C 盘切换到 D 盘. 先用 `D:\` 切换盘符. 然后在 D 盘内切换路径.
+4. 如何安装第三方类库  
+    命令行执行: `pip install lib-name`
+
 
 [download-python]: http://www.python.org/getit/
 [download-setuptools]: https://pypi.python.org/pypi/setuptools/1.1
@@ -39,12 +54,8 @@ python 主要包括 2.x 和 3.x 两个大版本，代码之间不兼容。
 [set-env]: http://zhidao.baidu.com/question/187573577.html
 
 
-Ubuntu 安装 python / pip
-------------------------
-
-#### 安装 python2.7
-
-#### python and pip tools
+Ubuntu 环境搭建
+---------------
 
 ```shell
 $ sudo apt-get install -y python python-setuptools python-dev
