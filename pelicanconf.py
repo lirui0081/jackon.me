@@ -12,6 +12,9 @@ AUTHOR_IMG = '/theme/img/user-image.png'
 AUTHOR_BIO = u'Jackon Yang, Web Developer. Passionate by Data Mining, Spider'
 
 
+SLUGIFY_SOURCE = 'basename'
+
+
 PATH = 'content'
 
 TIMEZONE = 'Asia/Shanghai'
