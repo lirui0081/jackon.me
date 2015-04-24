@@ -29,7 +29,7 @@ python 主要包括 2.x 和 3.x 两个大版本，代码之间不兼容。
 
 #### pip
 
-1. [下载 pip][download-pip] 并解压
+1. [下载 pip][download-pip] 并解压. notes: 下载后缀为 .tar.gz 的 source.
 2. DOS 下进入解压目录执行 `python setup.py install`
 3. [设置环境变量][set-env]，PATH 中添加 pip 的路径，默认为 `c:\python27\Scripts`
 
