@@ -23,6 +23,7 @@ PAGE_SAVE_AS = 'pages/{slug}/index.html'
 TEMPLATE_PAGES = {
     'contact.html': 'contact/index.html',
     'about.html': 'about/index.html',
+    'about.html': 'resume/index.html',
     }
 
 
