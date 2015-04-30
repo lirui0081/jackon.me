@@ -16,6 +16,14 @@ SLUGIFY_SOURCE = 'basename'
 ARTICLE_URL = 'posts/{slug}/'
 ARTICLE_SAVE_AS = 'posts/{slug}/index.html'
 
+PAGE_URL = 'pages/{slug}/'
+PAGE_SAVE_AS = 'pages/{slug}/index.html'
+
+
+TEMPLATE_PAGES = {
+    'contact.html': 'contact/index.html',
+    }
+
 
 PATH = 'content'
 
@@ -40,6 +48,10 @@ SOCIAL = (('GitHub', 'https://github.com/JackonYang'),
           ('LinkedIn', 'http://www.linkedin.com/in/jiekunyang'),
           ('Facebook', 'https://www.facebook.com/jackon.yang'),
           )
+
+CONTACT_INFO = {'email': 'jiekunyang@gmail.com',
+                'home': u'陕西, 西安',
+                }
 
 # Uncomment following line if you want document-relative URLs when developing
 #RELATIVE_URLS = True
