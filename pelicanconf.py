@@ -8,7 +8,7 @@ SITENAME = u'Jackon'
 SITE_SUBTEXT = u'Thoughts, stories and ideas.'
 
 AUTHOR = u'Jackon Yang'
-AUTHOR_IMG = '/theme/img/user-image.png'
+AUTHOR_IMG = '/theme/img/user-image.jpg'
 AUTHOR_BIO = u'Jackon Yang, Web Developer. Passionate by Spider, Data Modeling and Visualization'
 
 
