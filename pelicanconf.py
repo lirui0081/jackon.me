@@ -9,7 +9,7 @@ SITE_SUBTEXT = u'Thoughts, stories and ideas.'
 
 AUTHOR = u'Jackon Yang'
 AUTHOR_IMG = '/theme/img/user-image.png'
-AUTHOR_BIO = u'Jackon Yang, Web Developer. Passionate by Data Mining, Spider'
+AUTHOR_BIO = u'Jackon Yang, Web Developer. Passionate by Spider, Data Modeling and Visualization'
 
 
 SLUGIFY_SOURCE = 'basename'
@@ -22,6 +22,7 @@ PAGE_SAVE_AS = 'pages/{slug}/index.html'
 
 TEMPLATE_PAGES = {
     'contact.html': 'contact/index.html',
+    'about.html': 'about/index.html',
     }
 
 
