@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 
 SITEURL = 'http://jackon.me'
 
-SITENAME = u'Jackon'
+SITENAME = u'Jackon.me'
 SITE_SUBTEXT = u'Source code, project demo and narcissism of a coder.'
 
 AUTHOR = u'Jackon Yang'
@@ -21,9 +21,7 @@ PAGE_SAVE_AS = 'pages/{slug}/index.html'
 
 
 TEMPLATE_PAGES = {
-    'contact.html': 'contact/index.html',
     'about.html': 'about/index.html',
-    'about.html': 'resume/index.html',
     }
 
 
