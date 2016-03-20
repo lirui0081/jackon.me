@@ -33,7 +33,7 @@ TIMEZONE = 'Asia/Shanghai'
 DEFAULT_LANG = u'en'
 
 THEME = "Gorgeous-Flat"
-POST_LIMIT = 3
+POST_LIMIT = 10
 ARTICLES_HOME_PAGE = True
 
 DEFAULT_PAGINATION = False
@@ -50,7 +50,7 @@ SOCIAL = (('GitHub', 'https://github.com/JackonYang'),
           ('Facebook', 'https://www.facebook.com/jackon.yang'),
           )
 
-CONTACT_INFO = {'email': 'jiekunyang@gmail.com',
+CONTACT_INFO = {'email': 'i@jackon.me',
                 'home': u'陕西, 西安',
                 }
 
