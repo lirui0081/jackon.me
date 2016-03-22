@@ -83,15 +83,34 @@ OK
 Invalid argument(s)
 127.0.0.1:6379> set desc "I'm Jackon"
 OK
-127.0.0.1:6379> set age 16
-OK
-127.0.0.1:6379> get age
-"16"
-127.0.0.1:6379> get name
-"jackon"
 ```
 
 #### 常用命令 keys ／ flushdb / del
+
+`keys *` 查看所有 key，此处，`*` 是通配符.
+查看所有以 `user_` 开头的 key，命令为 `keys user_*`
+
+`del key` 删除 key 及其 value
+
+`flushdb` 清空数据库。
+
+`save` 命令与 `dump.rdb` 文件:
+Redis 定期执行 save 命令，数据默认写入启动目录的 `dump.db` 文件。
+下次启动 redis 时，会加载 dump.db 里的数据
+
+
+个人的使用感触是，
+
+在 redis 里操作一段时间以后，
+基本记不清已经有多少 key 了，
+一些笔记复杂的命令执行过后，需要看下对应的 key / value 是否符合预期。
+此时，`keys *` 就很有用。
+
+开发阶段，为了保证每次运行，代码执行结果一致，可以先 flushdb 一下。
+注意，如果是跟其他人共用一个 db，就不要轻易 flushdb 了。
+
+如果自己只用了三两个 key，每次代码执行时，del 精准的删掉这几个 key 就可以了。
+
 
 ```bash
 127.0.0.1:6379> keys *
@@ -112,10 +131,6 @@ OK
 (empty list or set)
 ```
 
-`save` 命令与 `dump.rdb` 文件:
-
-Redis 定期执行 save 命令，默认数据写入启动目录的 `dump.db` 文件
-
 #### 编程语言接入－－Python 为例
 
 搭建基础的 Python 开发环境，参考[搭建 PYTHON 开发环境](http://jackon.me/posts/python-dev-env/)
@@ -130,29 +145,30 @@ Installing collected packages: redis
 Successfully installed redis-2.10.5
 ```
 
-Python 代码
+Python 代码，文件名: papapa.py
 
 ```python
 # -*- Encoding: utf-8 -*-
-import redis
+import redis  # python 语法要求，使用之前需要 import
 
+# 使用默认的 IP/port 与 Redis 建立链接
 r = redis.StrictRedis()
+# 使用制定的 IP/port 与 Redis 建立链接
+# 127.0.0.1 是本机 IP, Redis 默认端口 6379
 r2 = redis.StrictRedis(host='127.0.0.1', port=6379)
-
-print 'connection 1: %s' % r
-print 'connection 2: %s' % r2
 
 r.set('name', 'jackon')
 print 'name is %s' % r.get('name')
+
+print 'get name by r2: name=%s' % r2.get('name')
 ```
 
-执行结果
+运行 papapa.py 文件，执行的命令与结果
 
 ```bash
-$ python test.py
-connection 1: StrictRedis<ConnectionPool<Connection<host=localhost,port=6379,db=0>>>
-connection 2: StrictRedis<ConnectionPool<Connection<host=127.0.0.1,port=6379,db=0>>>
+$ python papapa.py
 name is jackon
+get name by r2: name=jackon
 ```
 
 #### 复杂数据结构
@@ -171,8 +187,7 @@ Redis 命令虽然多，但都遵循一个很好的模式。
 - 哈希表以 Z 开始
 - 列表，以 L(左)或 R(右) 开始，取决于操作方向。
 
-偷个懒，用 python 批量插入一些数据。
-当然，也可以在 redis-cli 里手动添加多个数据测试。
+为了演示方便，先用下面的python 脚本 pbpbpb.py 插入一点数据。
 
 ```python
 # -*- Encoding: utf-8 -*-
@@ -180,12 +195,14 @@ import redis
 
 r = redis.StrictRedis()
 
-r.flushdb()
+r.flushdb()  # 测试代码，先 flushdb 是个好习惯。
+可以避免数据库已有数据干扰。
 
 for i in range(3):
-    r.sadd('total', i)
-    r.lpush('seq', i)
+    r.sadd('total', i)  # 集合 total 中，插入元素 i
+    r.lpush('seq', i)  # 列表 seq 中，插入元素 i
 
+# 再插入一次数据
 for i in range(3):
     r.sadd('total', i)
     r.lpush('seq', i)
