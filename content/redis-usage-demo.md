@@ -187,109 +187,71 @@ Redis 命令虽然多，但都遵循一个很好的模式。
 - 哈希表以 Z 开始
 - 列表，以 L(左)或 R(右) 开始，取决于操作方向。
 
-为了演示方便，先用下面的python 脚本 pbpbpb.py 插入一点数据。
+Redis 里的数据结构, 有非常严格的数学概念. 值得深入研究.
+比如, 统计 set 内元素的个数, 命令是 scard, 而不是常见的 size / length 一类.
+card 是 cardinality 的缩写, 一个数学术语.  中文是`基数`
 
-```python
-# -*- Encoding: utf-8 -*-
-import redis
+[Redis 官方文档](http://redis.io/topics/data-types-intro)
 
-r = redis.StrictRedis()
-
-r.flushdb()  # 测试代码，先 flushdb 是个好习惯。
-可以避免数据库已有数据干扰。
-
-for i in range(3):
-    r.sadd('total', i)  # 集合 total 中，插入元素 i
-    r.lpush('seq', i)  # 列表 seq 中，插入元素 i
-
-# 再插入一次数据
-for i in range(3):
-    r.sadd('total', i)
-    r.lpush('seq', i)
-
-print '%s elements in set' % r.scard('total')  # card is short for cardinality
-print '%s elements in seq' % r.llen('seq')  # len is short for length
-```
-
-执行结果：
+简单的演示几个命令, 不做深入介绍.
+后续会出一个 Redis 数据结构的专题.
 
 ```bash
-$ python test2.py
-3 elements in set
-6 elements in seq
-```
-
-redis-cli 查看执行结果
-
-```bash
-127.0.0.1:6379> keys *
-1) "total"
-2) "seq"
-127.0.0.1:6379> scard total
-(integer) 3
-127.0.0.1:6379> llen seq
-(integer) 6
-127.0.0.1:6379> sadd total 11 21
-(integer) 2
-127.0.0.1:6379> smembers total
-1) "0"
-2) "1"
-3) "2"
-4) "11"
-5) "21"
-127.0.0.1:6379> lrange seq 0 -1
-1) "2"
-2) "1"
-3) "0"
-4) "2"
-5) "1"
-6) "0"
-127.0.0.1:6379> lpush seq 11
-(integer) 7
-127.0.0.1:6379> lrange seq 0 -1
-1) "11"
+127.0.0.1:6379> FLUSHDB  # 清空演示数据库,避免已有干扰
+OK
+127.0.0.1:6379> sadd total 1  # 集合 total 内添加一个元素
+(integer) 1  # 新增 1 个元素. 无需手动提前初始化一个空的 total 集合.
+127.0.0.1:6379> sadd total 1 2 3 4 5  # 添加 5 个元素.
+(integer) 4  # 新增 4 个元素
+127.0.0.1:6379> smembers total  # set 内所有元素
+1) "1"
 2) "2"
-3) "1"
-4) "0"
-5) "2"
-6) "1"
-7) "0"
-127.0.0.1:6379> rpush seq 21
-(integer) 8
-127.0.0.1:6379> lrange seq 0 -1
-1) "11"
-2) "2"
-3) "1"
-4) "0"
-5) "2"
-6) "1"
-7) "0"
-8) "21"
+3) "3"
+4) "4"
+5) "5"
+127.0.0.1:6379> scard total  # set 内元素个数
+(integer) 5
 ```
 
 #### 缓存与 TTL
 
-到期功能，
+TTL -- 生存时间(Time To Live)
+
+TTL 的概念, 在 HTTP 协议里, 用的很多.
+
+Redis 里的术语, 叫: 到期功能.
 即 set 命令设置 key / value 时，可以为 key 设置一个到期时间，比如 30秒。
 30 秒后，Redis 自动删除这个键值对。其他的键值对不受影响。
 
 到期功能，有助于避免总的键集无限增长。
 
-基本用法演示：
+基本命令:
 
-```shell
-27.0.0.1:6379> setex ice 10 "I'm melting..."
+- `SETEX key seconds value`
+    设置 key / value, 生存时间为 seconds
+- `ttl key`
+    查询 key 的生存时间
+    返回值及其含义
+    - `-2` key 不存在
+    - `-1` key 存在, 但没有过期时间
+    - 正整数, 剩余的生存时间
+
+
+用法演示：
+
+```bash
+27.0.0.1:6379> setex ice 10 "I'm melting..."  # ice 的 value 是 I'm melting...  保存 10 秒
 OK
-127.0.0.1:6379> ttl ice
-(integer) 8
-127.0.0.1:6379> get ice
+127.0.0.1:6379> ttl ice  # 剩余生存时间
+(integer) 8  # 剩余 8 秒. 说明我的手速很快, 敲这些命令, 只用了 2 秒. :D
+127.0.0.1:6379> get ice  # 获取 ice 的 value
 "I'm melting..."
-127.0.0.1:6379> exists ice
-(integer) 1
+127.0.0.1:6379> exists ice  # 查询 ice 是否存在
+(integer) 1  # 存在
 127.0.0.1:6379> ttl ice
-(integer) -2
-127.0.0.1:6379> exists ice
-(integer) 0
+(integer) -2  # 无效值, 不存在了
+127.0.0.1:6379> exists ice  # 查询 ice 是否存在
+(integer) 0 # 不存在了
 127.0.0.1:6379> get ice
 (nil)
 ```
@@ -306,7 +268,6 @@ OK
 (integer) 9
 ```
 
-
 **黑科技：当 Redis 的 TTL 遇到了爬虫**
 
 ```python
@@ -317,32 +278,46 @@ import time
 r = redis.StrictRedis()
 r.flushdb()
 
-
+# 发送 http 消息的函数
 def req():
     time.sleep(1)
     print 'requesting jackon.me...'
 
 
-lock_name = 'http-lock'
-THRESHOLD = 3
+lock_name = 'http-lock'  # 锁的名字, 可以为不同的 网站 / 页面类型设置不同的锁
+INTERVAL = 3  # 相邻 http 请求的间隔秒数. 访问速度速度太快, 容易被网站屏蔽.
 
-while True:
-    t = r.ttl(lock_name)
-    if t > 0:
+while True:  # 循环访问
+    t = r.ttl(lock_name)  # lock_name 的生存时间, 即为仍需等待的时间
+    if t > 0:  # 锁存在, 需要 sleep 消耗时间
         print 'sleep %s seconds' % t
         time.sleep(t)
 
-    r.setex(lock_name, THRESHOLD, 'locking')
-    req()
+    # 开始新的请求之前, 设置新的锁.
+    r.setex(lock_name, INTERVAL, 'locking')
+    req()  # 请求
 ```
 
 一旦爬虫被封，进入 redis，setex 一下 'http-lock' 的 TTL。
 爬虫自动进入休眠状态。
 
+注意, 这个代码没有处理 ttl 返回 -1 的情况.
+
+一般的爬虫代码, 是先 request, 再 sleep INTERVAL 秒.
+所以, 实际的间隔时间超过预期, 抓取速度下降.
 
 #### 发布 － 订阅
 
 如此简单，以至于任何文字都是多余的。
+
+不需要提前初始化一个空的频道.
+第一个订阅者订阅时,  自动创建频道.
+
+- 2 个客户端(人) 订阅了 python-cn 频道.
+- 另外 1 个人, 发布了一条消息: Vim is the best editor.
+- 2 个订阅者都收到了消息. 一般, 他们会进入 `沸腾的撕逼` 的状态.
+- 1 个人在 phper 的频道里发布了一条消息: PHP 的是 拍黄片 的缩写.
+- python-cn 的订阅者都没有收到消息.
 
 看图
 ![redis-sub-pub](https://raw.githubusercontent.com/JackonYang/IOut.me/master/images/redis/redis-sub-pub.png)
