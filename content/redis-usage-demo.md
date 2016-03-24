@@ -2,7 +2,7 @@ Title: Redis 常见使用场景 Demo
 Date: 2016-03-20 14:16
 Category: redis
 Tags: redis, database, nosql
-Summary: Redis 是一个基于内存的“数据结构”存储，可以用作: 数据库，缓存，消息管道。我们通过 demo 演示来理解这几个名词。
+Summary: Redis 是一个基于内存的“数据结构”存储，可以用作: 数据库，缓存，消息管道。我们通过几个 demo 来理解基本概念。
 
 ## 什么是 Redis？
 
@@ -17,7 +17,7 @@ Summary: Redis 是一个基于内存的“数据结构”存储，可以用作: 
 - 缓存
 - 消息管道
 
-我们通过 demo 演示来理解这几个名词。
+我们通过几个 demo 来理解基本概念。
 
 ## 安装
 
@@ -53,16 +53,20 @@ $ redis-server
 
 如果要运行在后台，在命令后加一个 `&` ，即：`redis-server &`
 
-
 打开另外一个终端，
 运行命令行界面（Command Line Interface，简称 cli)，连接到 Server
+
+`127.0.0.1:6379>` 是 redis-cli 的命令行提示符,
+就像 Mac / Linux 下的 `jackon@local-ubuntu:~$` 一样.
+
+**redis-cli 里的命令不区分大小写**
+
+发送 ping，回复 pong，则表示链接成功。
 ```bash
 $ redis-cli
 127.0.0.1:6379> ping
 PONG
 ```
-
-发送 ping，回复 pong，则表示链接成功。
 
 否则
 ```bash
@@ -79,41 +83,36 @@ Could not connect to Redis at 127.0.0.1:6379: Connection refused
 OK
 127.0.0.1:6379> get name
 "jackon"
-127.0.0.1:6379> set desc I'm Jackon
+127.0.0.1:6379> set desc Web Developer  # value 里面有空格, redis 就搞不定了.
 Invalid argument(s)
-127.0.0.1:6379> set desc "I'm Jackon"
+127.0.0.1:6379> set desc "Web Developer"  # 一个 " 解决问题
 OK
 ```
 
-#### 常用命令 keys ／ flushdb / del
+#### 实用但被忽略的基础命令
 
-`keys *` 查看所有 key，此处，`*` 是通配符.
-查看所有以 `user_` 开头的 key，命令为 `keys user_*`
-
-`del key` 删除 key 及其 value
-
-`flushdb` 清空数据库。
-
-`save` 命令与 `dump.rdb` 文件:
-Redis 定期执行 save 命令，数据默认写入启动目录的 `dump.db` 文件。
-下次启动 redis 时，会加载 dump.db 里的数据
-
+- `keys *` 查看所有 key，此处，`*` 是通配符.
+    查看所有以 `user_` 开头的 key，命令为 `keys user_*`
+- `del key` 删除 key 及其 value
+- `flushdb` 清空数据库。
 
 个人的使用感触是，
 
 在 redis 里操作一段时间以后，
 基本记不清已经有多少 key 了，
-一些笔记复杂的命令执行过后，需要看下对应的 key / value 是否符合预期。
+一些比较复杂的命令执行过后，需要看下执行结果是否符合预期。
+比如, 批量添加了 100 个 key  / value 对.
 此时，`keys *` 就很有用。
 
-开发阶段，为了保证每次运行，代码执行结果一致，可以先 flushdb 一下。
+开发阶段，为了保证每次运行，代码执行结果一致，可以先 flushdb 清空历史数据。
 注意，如果是跟其他人共用一个 db，就不要轻易 flushdb 了。
 
 如果自己只用了三两个 key，每次代码执行时，del 精准的删掉这几个 key 就可以了。
 
+演示:
 
 ```bash
-127.0.0.1:6379> keys *
+127.0.0.1:6379> keys *  # 已经提前添加了 3 个 key / value
 1) "age"
 2) "desc"
 3) "name"
@@ -131,9 +130,27 @@ OK
 (empty list or set)
 ```
 
-#### 编程语言接入－－Python 为例
+#### `dump.rdb` 文件是什么鬼
 
-搭建基础的 Python 开发环境，参考[搭建 PYTHON 开发环境](http://jackon.me/posts/python-dev-env/)
+Redis 会定期把内存里的数据写入硬盘备份.
+默认, 写入启动目录下的 `dump.db` 文件.
+下次启动 redis 时，会加载 dump.db 里的数据.
+
+`save` 命令会触发一次 备份.
+
+```bash
+127.0.0.1:6379> save
+OK
+```
+
+ dump.db 文件更新, 同时, Server 端的 log 日志出现:
+```bash
+5247:M 24 Mar 10:37:53.534 * DB saved on disk
+```
+
+## 编程语言接入 -- Python 为例
+
+搭建基础的 Python 开发环境，参考 [搭建 PYTHON 开发环境](http://jackon.me/posts/python-dev-env/)
 
 安装 Python 的 redis 包：
 ```bash
@@ -153,14 +170,14 @@ import redis  # python 语法要求，使用之前需要 import
 
 # 使用默认的 IP/port 与 Redis 建立链接
 r = redis.StrictRedis()
-# 使用制定的 IP/port 与 Redis 建立链接
+# 使用指定的 IP/port 与 Redis 建立链接
 # 127.0.0.1 是本机 IP, Redis 默认端口 6379
 r2 = redis.StrictRedis(host='127.0.0.1', port=6379)
 
-r.set('name', 'jackon')
-print 'name is %s' % r.get('name')
+r.set('name', 'jackon')  # 用第一个连接写入数据
+print 'name is %s' % r.get('name')  # 第一个连接可以读取数据
 
-print 'get name by r2: name=%s' % r2.get('name')
+print 'get name by r2: name=%s' % r2.get('name')  # 第二个连接也可以读取数据
 ```
 
 运行 papapa.py 文件，执行的命令与结果
@@ -171,7 +188,7 @@ name is jackon
 get name by r2: name=jackon
 ```
 
-#### 复杂数据结构
+## 复杂数据结构
 
 - List: 列表(链表)
 - Set: 集合
@@ -188,7 +205,7 @@ Redis 命令虽然多，但都遵循一个很好的模式。
 - 列表，以 L(左)或 R(右) 开始，取决于操作方向。
 
 Redis 里的数据结构, 有非常严格的数学概念. 值得深入研究.
-比如, 统计 set 内元素的个数, 命令是 scard, 而不是常见的 size / length 一类.
+比如, 统计 set 内元素的个数, 命令是 `scard`, 而不是常见的 size / length 一类.
 card 是 cardinality 的缩写, 一个数学术语.  中文是`基数`
 
 [Redis 官方文档](http://redis.io/topics/data-types-intro)
@@ -197,45 +214,42 @@ card 是 cardinality 的缩写, 一个数学术语.  中文是`基数`
 后续会出一个 Redis 数据结构的专题.
 
 ```bash
-127.0.0.1:6379> FLUSHDB  # 清空演示数据库,避免已有干扰
+127.0.0.1:6379> FLUSHDB  # 清空演示数据库,避免已有数据干扰
 OK
-127.0.0.1:6379> sadd total 1  # 集合 total 内添加一个元素
+127.0.0.1:6379> sadd total 11  # 集合 total 内添加一个元素
 (integer) 1  # 新增 1 个元素. 无需手动提前初始化一个空的 total 集合.
-127.0.0.1:6379> sadd total 1 2 3 4 5  # 添加 5 个元素.
-(integer) 4  # 新增 4 个元素
+127.0.0.1:6379> sadd total 11 12 13 14 15  # 添加 5 个元素.
+(integer) 4  # 新增 4 个元素. 其中, 11 是重复的.
 127.0.0.1:6379> smembers total  # set 内所有元素
-1) "1"
-2) "2"
-3) "3"
-4) "4"
-5) "5"
+1) "11"
+2) "12"
+3) "13"
+4) "14"
+5) "15"
 127.0.0.1:6379> scard total  # set 内元素个数
 (integer) 5
 ```
 
-#### 缓存与 TTL
+## 缓存与 TTL
 
-TTL -- 生存时间(Time To Live)
-
-TTL 的概念, 在 HTTP 协议里, 用的很多.
+TTL -- 生存时间(Time To Live).
+熟悉 HTTP 协议的, 应该对 ttl 不陌生.
 
 Redis 里的术语, 叫: 到期功能.
-即 set 命令设置 key / value 时，可以为 key 设置一个到期时间，比如 30秒。
+即设置 key / value 时，可以为 key 设置一个到期时间，比如 30秒。
 30 秒后，Redis 自动删除这个键值对。其他的键值对不受影响。
 
 到期功能，有助于避免总的键集无限增长。
 
-基本命令:
+#### 常用命令
 
 - `SETEX key seconds value`
     设置 key / value, 生存时间为 seconds
-- `ttl key`
-    查询 key 的生存时间
-    返回值及其含义
-    - `-2` key 不存在
+- `TTL key` 查询 key 的生存时间
+    返回值
+    - `-2` key 不存在 (到期已删除)
     - `-1` key 存在, 但没有过期时间
-    - 正整数, 剩余的生存时间
-
+    - 正整数, 剩余的生存时间, 单位为 秒
 
 用法演示：
 
@@ -243,16 +257,16 @@ Redis 里的术语, 叫: 到期功能.
 27.0.0.1:6379> setex ice 10 "I'm melting..."  # ice 的 value 是 I'm melting...  保存 10 秒
 OK
 127.0.0.1:6379> ttl ice  # 剩余生存时间
-(integer) 8  # 剩余 8 秒. 说明我的手速很快, 敲这些命令, 只用了 2 秒. :D
+(integer) 8  # 剩余 8 秒. 手速有多快! 敲这些命令, 只用了 2 秒 :D
 127.0.0.1:6379> get ice  # 获取 ice 的 value
 "I'm melting..."
 127.0.0.1:6379> exists ice  # 查询 ice 是否存在
 (integer) 1  # 存在
 127.0.0.1:6379> ttl ice
-(integer) -2  # 无效值, 不存在了
-127.0.0.1:6379> exists ice  # 查询 ice 是否存在
-(integer) 0 # 不存在了
-127.0.0.1:6379> get ice
+(integer) -2  # ice 不存在, 已被删除
+127.0.0.1:6379> exists ice  # 再次查询 ice 是否存在
+(integer) 0 # 不存在
+127.0.0.1:6379> get ice  # 不存在的 key, 返回空(nil)
 (nil)
 ```
 
@@ -262,13 +276,13 @@ OK
 OK
 127.0.0.1:6379> ttl ice
 (integer) 8
-127.0.0.1:6379> setex ice 10 "I'm melting..."
+127.0.0.1:6379> setex ice 20 "I'm melting..."
 OK
 127.0.0.1:6379> ttl ice
-(integer) 9
+(integer) 19
 ```
 
-**黑科技：当 Redis 的 TTL 遇到了爬虫**
+#### 黑科技：当 Redis TTL 遇到了爬虫
 
 ```python
 # -*- Encoding: utf-8 -*-
@@ -280,44 +294,61 @@ r.flushdb()
 
 # 发送 http 消息的函数
 def req():
-    time.sleep(1)
     print 'requesting jackon.me...'
+    time.sleep(1)  # 假设, 我们的网络环境, 发送收发一次 http, 需要 1 秒钟.
 
 
-lock_name = 'http-lock'  # 锁的名字, 可以为不同的 网站 / 页面类型设置不同的锁
+lock_name = 'http-lock'  # 锁的名字, 可以为不同的 网站 / 页面类型 设置不同的锁
 INTERVAL = 3  # 相邻 http 请求的间隔秒数. 访问速度速度太快, 容易被网站屏蔽.
 
 while True:  # 循环访问
-    t = r.ttl(lock_name)  # lock_name 的生存时间, 即为仍需等待的时间
-    if t > 0:  # 锁存在, 需要 sleep 消耗时间
+    t = r.ttl(lock_name)  # lock_name 的生存时间, 即, 仍需等待的时间
+    if t > 0:  # 锁存在, 剩余存活时间 t 秒
         print 'sleep %s seconds' % t
-        time.sleep(t)
+        time.sleep(t)  # 等待 t 秒
 
     # 开始新的请求之前, 设置新的锁.
     r.setex(lock_name, INTERVAL, 'locking')
     req()  # 请求
 ```
 
-一旦爬虫被封，进入 redis，setex 一下 'http-lock' 的 TTL。
-爬虫自动进入休眠状态。
+一旦爬虫被封，进入 redis, 执行以下命令, 爬虫休眠 1 小时
 
-注意, 这个代码没有处理 ttl 返回 -1 的情况.
+```bash
+127.0.0.1:6379> setex http-lock 3600 locking
+OK
+```
 
-一般的爬虫代码, 是先 request, 再 sleep INTERVAL 秒.
+一般的爬虫, 是先 request, 再 sleep INTERVAL 秒.
 所以, 实际的间隔时间超过预期, 抓取速度下降.
 
-#### 发布 － 订阅
+注意, 这段代码仅用于演示核心思路, 存在几个坑
 
-如此简单，以至于任何文字都是多余的。
+- 没有处理 ttl 返回 -1 的情况
+- 代码执行 `r.setex(...)`时, 可能会覆盖 redis-cli 手动添加的休眠指令.
 
+## 发布 / 订阅
+
+如此简单，以至于任何解释都是多余的。
+
+#### 案例背景
+
+    A, B, C 三个程序员, python-cn 和 phper 是 2 个聊天室.
+    我们让前者沸腾, 后者哭泣.
+
+#### 演示步骤
+
+1. A 通过 `subscribe` 命令订阅 python-cn 频道.
+2. B 通过 `subscribe` 命令, 在另外一个 terminal 中订阅 python-cn 频道.
+3. C 通过 `publish` 命令在 python-cn 频道里发布了一条消息: Vim is the best editor.
+    频道订阅者(A 和 B)都收到了消息. 一般, 他们会进入 `沸腾的撕逼` 的状态.
+4. C 又在 phper 的频道里发布了一条消息: PHP is short for pai huang pian(PHP 的是 拍黄片 的缩写)
+    python-cn 的订阅者都没有收到消息.
+    如果有 php 码农订阅了 phper 频道, 他的女朋友恰好路过看到了这条消息, 他会哭. 
+
+注意: 
 不需要提前初始化一个空的频道.
 第一个订阅者订阅时,  自动创建频道.
-
-- 2 个客户端(人) 订阅了 python-cn 频道.
-- 另外 1 个人, 发布了一条消息: Vim is the best editor.
-- 2 个订阅者都收到了消息. 一般, 他们会进入 `沸腾的撕逼` 的状态.
-- 1 个人在 phper 的频道里发布了一条消息: PHP 的是 拍黄片 的缩写.
-- python-cn 的订阅者都没有收到消息.
 
 看图
 ![redis-sub-pub](https://raw.githubusercontent.com/JackonYang/IOut.me/master/images/redis/redis-sub-pub.png)
