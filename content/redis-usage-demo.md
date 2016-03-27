@@ -325,24 +325,26 @@ OK
 - 没有处理 ttl 返回 -1 的情况
 - 代码执行 `r.setex(...)`时, 可能会覆盖 redis-cli 手动添加的休眠指令.
 
-## 发布 / 订阅
+## Redis 自带的 SUB/PUB (发布/订阅)
 
 如此简单，以至于任何解释都是多余的。
 
 #### 案例背景
 
-    A, B, C 三个程序员, python-cn 和 phper 是 2 个聊天室.
+    A, B, C, D 4 个程序员, python-cn 和 phper 是 2 个聊天室.
     我们让前者沸腾, 后者哭泣.
 
 #### 演示步骤
 
 1. A 通过 `subscribe` 命令订阅 python-cn 频道.
 2. B 通过 `subscribe` 命令, 在另外一个 terminal 中订阅 python-cn 频道.
-3. C 通过 `publish` 命令在 python-cn 频道里发布了一条消息: Vim is the best editor.
+3. C 通过 `subscribe` 命令, 在另外一个 terminal 中订阅 phper 频道.
+3. D 通过 `publish` 命令在 python-cn 频道里发布了一条消息: Vim is the best editor.
     频道订阅者(A 和 B)都收到了消息. 一般, 他们会进入 `沸腾的撕逼` 的状态.
-4. C 又在 phper 的频道里发布了一条消息: PHP is short for pai huang pian(PHP 的是 拍黄片 的缩写)
+    C 并没有收到消息
+4. D 又在 phper 的频道里发布了一条消息: PHP is short for pai huang pian(PHP 的是 拍黄片 的缩写)
     python-cn 的订阅者都没有收到消息.
-    如果有 php 码农订阅了 phper 频道, 他的女朋友恰好路过看到了这条消息, 他会哭. 
+    但是，C 收到了。如果他新交的不懂编程女朋友恰好路过看到了这条消息, 他会哭. 
 
 注意: 
 不需要提前初始化一个空的频道.
