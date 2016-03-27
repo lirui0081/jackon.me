@@ -28,12 +28,7 @@ $ brew install redis
 
 **澄清**
 
-很多攻略给出的方法是: 编译安装。其实没必要。
-
-这是以前官网推荐的方式，理由是 brew / apt-get 安装的版本太老。
-实测，当前 brew 安装的就是最新 stable 版 3.07，所以无需编译安装。
-
-编译安装：
+很多攻略给出的方法是: 编译安装, 命令如下
 
 ```bash
 wget http://download.redis.io/releases/redis-stable.tar.gz
@@ -42,6 +37,9 @@ cd redis-stable/
 make
 sudo make install
 ```
+
+曾经，这是官网推荐的方式，因为 brew / apt-get 安装的版本太老。
+实测，当前 brew 安装的就是最新 stable 版 3.0.7，所以无需编译安装。
 
 ## 基本用法
 
